@@ -8,12 +8,10 @@ class BooksSpider(scrapy.Spider):
     start_urls = ["https://books.toscrape.com/"]
 
     def parse(self, response: Response) -> None:
-        # Parse the list of books on the current page
         for book in response.css("article.product_pod"):
             book_url = response.urljoin(book.css("h3 a::attr(href)").get())
             yield scrapy.Request(book_url, callback=self.parse_book_details)
 
-        # Follow pagination links
         next_page = response.css("li.next a::attr(href)").get()
         if next_page:
             next_page_url = response.urljoin(next_page)
